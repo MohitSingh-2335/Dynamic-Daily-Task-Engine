@@ -143,6 +143,14 @@ venv/
 ENV/
 env.bak/
 venv.bak/
+engine_env
+
+# Google API Secrets
+credentials.json
+token.json
+
+# Local Database
+daily_engine.db
 
 # Spyder project settings
 .spyderproject
