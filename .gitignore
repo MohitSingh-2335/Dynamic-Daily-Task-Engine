@@ -213,3 +213,29 @@ cython_debug/
 marimo/_static/
 marimo/_lsp/
 __marimo__/
+
+
+# 1. Virtual Environments
+engine_env/
+venv/
+env/
+
+# 2. Security & Credentials (CRITICAL)
+*.pem
+task-engine-key.pem
+credentials.json
+token.json
+
+# 3. Databases
+*.db
+*.sqlite3
+daily_engine.db
+
+# 4. AI & Audio Temporary Files
+*.wav
+temp_idea.wav
+
+# 5. Python Cache
+__pycache__/
+*.py[cod]
+*$py.class
