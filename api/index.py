@@ -2,7 +2,7 @@ import os
 from flask import Flask, request, jsonify
 from flask_cors import CORS
 from groq import Groq
-from database import get_db_connection
+from .database import get_db_connection
 
 # Initialize the Flask App
 app = Flask(__name__)
