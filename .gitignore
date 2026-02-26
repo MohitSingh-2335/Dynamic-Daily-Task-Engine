@@ -239,3 +239,23 @@ temp_idea.wav
 __pycache__/
 *.py[cod]
 *$py.class
+
+
+# 1. Virtual Environments (NEVER push these)
+engine_env/
+venv/
+env/
+
+# 2. Secrets & Keys (FinOps & Security)
+.env
+*.pem
+*.key
+
+# 3. Python Cache (Prevents weird server bugs)
+__pycache__/
+*.py[cod]
+*$py.class
+
+# 4. OS Junk Files
+.DS_Store
+Thumbs.db
