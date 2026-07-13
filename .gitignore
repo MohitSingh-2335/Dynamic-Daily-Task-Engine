@@ -149,6 +149,9 @@ engine_env
 credentials.json
 token.json
 
+# Local project reports
+reports/
+
 # Local Database
 daily_engine.db
 
