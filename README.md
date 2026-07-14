@@ -99,12 +99,14 @@ Deploy `api/index.py` as the Python entrypoint. The included `vercel.json` route
 
 ## API Endpoints
 
-- **`POST /api/intake`**: Accepts `{"text": "..."}` or audio file uploads to parse tasks/goals.
+**Base URL**: `https://dynamic-daily-task-engine.vercel.app`
+
+- **`POST /api/intake`**: Accepts `{"text": "..."}` or audio file uploads to parse tasks/goals. (e.g., `https://dynamic-daily-task-engine.vercel.app/api/intake`)
 - **`POST /api/plan`**: Processes ideas and updates task relationships/priorities.
 - **`POST /api/schedule`**: Pushes pending tasks to Google Calendar events.
 - **`GET /api/review`**: Fetches the current state of tasks (scheduled, pending, etc.).
 - **`POST /api/review`**: Accepts updates to tasks (e.g., marking as complete or rolling over).
-- **`GET /api/health` & `GET /api/readiness`**: Basic system and database health checks.
+- **`GET /api/health` & `GET /api/readiness`**: Basic system and database health checks. (e.g., `https://dynamic-daily-task-engine.vercel.app/api/health`)
 
 ## Smoke test
 
