@@ -1,4 +1,4 @@
-Dynamic Daily Task Engine
+# **Dynamic Daily Task Engine**
 
 The Dynamic Daily Task Engine is a Python backend for intake, planning, scheduling, rollover, and review. Supabase is the source of truth, Groq turns free-form intake into structured goals/tasks, and Google Calendar stores the schedule that the database state points to.
 
