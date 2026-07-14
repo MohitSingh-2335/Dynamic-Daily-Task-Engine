@@ -1,57 +1,41 @@
-import sqlite3
+from __future__ import annotations
+
 import sys
 from datetime import datetime
 
+from api.service import build_service
+
+
 def setup_idea_table():
-    """Creates the ideas table if it doesn't exist yet."""
-    conn = sqlite3.connect('daily_engine.db')
-    cursor = conn.cursor()
-    cursor.execute('''
-        CREATE TABLE IF NOT EXISTS ideas (
-            idea_id INTEGER PRIMARY KEY AUTOINCREMENT,
-            content TEXT NOT NULL,
-            timestamp DATETIME DEFAULT CURRENT_TIMESTAMP,
-            status TEXT DEFAULT 'Unread'
-        )
-    ''')
-    conn.commit()
-    conn.close()
+    return build_service().readiness_report()
+
 
 def log_idea(idea_text):
-    """Saves a new idea to the database."""
-    conn = sqlite3.connect('daily_engine.db')
-    cursor = conn.cursor()
-    cursor.execute("INSERT INTO ideas (content) VALUES (?)", (idea_text,))
-    conn.commit()
-    conn.close()
-    print(f"💡 Idea logged securely: '{idea_text}'")
+    idea = build_service().log_idea(idea_text, source="idea_inbox")
+    print(f"Idea logged: {idea.get('content')}")
+
 
 def view_ideas():
-    """Displays all unread ideas."""
-    conn = sqlite3.connect('daily_engine.db')
-    cursor = conn.cursor()
-    cursor.execute("SELECT idea_id, content, timestamp FROM ideas WHERE status = 'Unread'")
-    ideas = cursor.fetchall()
-    conn.close()
-    
+    ideas = build_service().list_unread_ideas()
     if not ideas:
-        print("📭 Your idea inbox is empty.")
+        print("Your idea inbox is empty.")
         return
-        
-    print("\n--- 🧠 Your Unread Ideas ---")
+
+    print("Your Unread Ideas")
     for idea in ideas:
-        # Format the timestamp to be cleaner
-        time_obj = datetime.strptime(idea[2], '%Y-%m-%d %H:%M:%S')
-        formatted_time = time_obj.strftime('%b %d, %I:%M %p')
-        print(f"[{idea[0]}] {formatted_time} - {idea[1]}")
+        created_at = idea.get("created_at")
+        formatted_time = created_at
+        if created_at:
+            try:
+                formatted_time = datetime.fromisoformat(created_at.replace("Z", "+00:00")).strftime("%b %d, %I:%M %p")
+            except ValueError:
+                formatted_time = created_at
+        print(f"[{idea.get('id')}] {formatted_time} - {idea.get('content')}")
+
 
 if __name__ == "__main__":
     setup_idea_table()
-    
-    # If you type an idea after the script name, it saves it.
     if len(sys.argv) > 1:
-        idea = " ".join(sys.argv[1:])
-        log_idea(idea)
-    # If you just run the script, it shows your inbox.
+        log_idea(" ".join(sys.argv[1:]))
     else:
         view_ideas()
