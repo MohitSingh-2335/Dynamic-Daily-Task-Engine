@@ -1,46 +1,42 @@
-import sqlite3
+from __future__ import annotations
+
+from api.service import build_service
+
 
 def update_tasks():
-    conn = sqlite3.connect('daily_engine.db')
-    cursor = conn.cursor()
-
-    # Fetch tasks that were scheduled for today
-    cursor.execute("SELECT task_id, title, duration_mins FROM tasks WHERE status = 'Scheduled'")
-    scheduled_tasks = cursor.fetchall()
+    service = build_service()
+    scheduled_tasks = service.list_scheduled_parent_tasks()
 
     if not scheduled_tasks:
-        print("🎉 No scheduled tasks found. Your slate is clean!")
+        print("No scheduled tasks found.")
         return
 
-    print("\n--- 🌙 Evening Review: Task Roll-Over ---")
-    print("Let's update what you accomplished today.\n")
+    print("Evening Review")
+    print("Update what you accomplished today.\n")
 
+    updates = []
     for task in scheduled_tasks:
-        task_id, title, duration = task
-        print(f"🔹 {title} (Allocated: {duration} mins)")
-        
+        title = task.get("content", "Untitled Task")
+        duration = task.get("scheduled_start_at")
+        print(f"{title} ({duration or task.get('estimated_minutes', 0)} mins)")
+
         while True:
             response = input("Did you finish this completely? (y/n): ").strip().lower()
-            if response == 'y':
-                cursor.execute("UPDATE tasks SET status = 'Completed' WHERE task_id = ?", (task_id,))
-                print("   ✅ Marked as Completed.\n")
+            if response == "y":
+                updates.append({"task_id": task["id"], "completed": True})
+                print("Marked as completed.\n")
                 break
-            elif response == 'n':
-                leftover = input("   How many minutes of work are still left? ")
-                try:
-                    leftover_mins = int(leftover)
-                    # Reset status to Pending and update the duration for tomorrow's scheduling
-                    cursor.execute("UPDATE tasks SET status = 'Pending', duration_mins = ? WHERE task_id = ?", (leftover_mins, task_id))
-                    print(f"   🔄 Rolled over {leftover_mins} mins to tomorrow.\n")
-                    break
-                except ValueError:
-                    print("   ❌ Please enter a valid number.")
-            else:
-                print("   ❌ Please enter 'y' or 'n'.")
+            if response == "n":
+                leftover = input("How many minutes of work are still left? ")
+                updates.append({"task_id": task["id"], "remaining_minutes": leftover})
+                print(f"Rolled over {leftover} mins.\n")
+                break
+            print("Please enter 'y' or 'n'.")
 
-    conn.commit()
-    conn.close()
-    print("✅ Evening review complete! Your database is ready for tomorrow's schedule generation.")
+    result = service.apply_review_updates(updates)
+    print(result)
+    print("Evening review complete.")
 
-if __name__ == '__main__':
+
+if __name__ == "__main__":
     update_tasks()
